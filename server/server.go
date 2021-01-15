@@ -1,45 +1,91 @@
 package main
 
 import (
+  "io"
   "os"
   "fmt"
   "log"
-  "encoding/json"
+  "bytes"
+  "strings"
   "net/http"
+  "io/ioutil"
+  "encoding/json"
 )
 
+var empFilePath string = "data/EmployeeMaster.json"
+
 type Employee struct {
-  Name, Email, Password, Position string
+  Name string `json:"Name"`
+  Email string`json:"Email"`
+  Password string`json:"Password"`
+  Position string`json:"Position"`
 }
 
-func read() {
+type Admin struct {
+  Email, Password string
 }
 
-func save(emp *Employee) {
-  openFile, openFileErr := os.OpenFile("EmployeeMaster.json", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+func getEmployees() []Employee {
+  file, _ := ioutil.ReadFile(empFilePath)
+  empList := strings.Split(string(file), "\n")
+  var e Employee
+  var allEmps []Employee
+
+  for _, emp := range empList {
+    if emp == "" { break }
+    json.Unmarshal([]byte(emp), &e)
+    allEmps = append(allEmps, e)
+  }
+  return allEmps
+}
+
+func handleAdmin(res http.ResponseWriter, req *http.Request) {
+  email, _ := req.FormValue("email"), req.FormValue("password")
+  fmt.Fprintf(res, "Welcome, %s \n", email)
+
+  employees := getEmployees()
+  for _, em := range employees {
+    fmt.Println(em.Name)
+  }
+}
+
+func save(emp Employee) {
+  buffer := new(bytes.Buffer)
+  encoder := json.NewEncoder(buffer)
+  encoder.Encode(emp)
+
+  openFile, openFileErr := os.OpenFile(empFilePath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+
+  defer openFile.Close()
+
   if openFileErr != nil {
     log.Fatal(openFileErr)
   }
-  empData, fileErr := json.Marshal(emp)
-  if fileErr != nil {
-    fmt.Println(fileErr)
-    return
-  }
-  _, _ = openFile.WriteString(string(empData) + "\n")
+
+  io.Copy(openFile, buffer)
+
+  /*
+
+  // marshaling(struct to JSON)
+  empMarshalInd, _ := json.MarshalIndent(emp, "", "")
+  empMarshalIndStr := string(empMarshalInd)
+  _, _ = openFile.WriteString(empMarshalIndStr + "\n")
+  */
 }
 
-func addEmp(res http.ResponseWriter, req *http.Request) {
+func register(res http.ResponseWriter, req *http.Request) {
   name := req.FormValue("name")
   email := req.FormValue("email")
   pos := req.FormValue("pos")
   pass := req.FormValue("password")
-  //fmt.Fprintf(res, "Name: %s\nEmail: %s\nPosition: %s\nPassword: %s", name, email, pos, pass)
 
-  e := &Employee{Name: name, Email: email, Password: pass, Position: pos}
+  e := Employee{Name: name, Email: email, Password: pass, Position: pos}
   save(e)
 }
 
 func main() {
-  http.HandleFunc("/add", addEmp)
+  http.HandleFunc("/admin", handleAdmin)
+  http.HandleFunc("/register", register)
   http.ListenAndServe(":8000", nil)
+  fmt.Println("\033[32m Server is running....")
 }

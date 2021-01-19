@@ -9,7 +9,6 @@ import (
   "encoding/json"
 )
 
-
 type Weather struct {
 	Current struct {
 		Cloud     int64 `json:"cloud"`
@@ -54,7 +53,6 @@ type Weather struct {
 
 var weatherUrl = "http://api.weatherapi.com/v1/current.json?key=314e77b40bba445ebdf111850211901&q="
 
-
 func home(res http.ResponseWriter, req *http.Request) {
   if req.Method == "GET" {
     t := template.Must(template.ParseFiles("index.html"))
@@ -79,6 +77,7 @@ func home(res http.ResponseWriter, req *http.Request) {
     // convert to struct
     json.Unmarshal([]byte(data), &weatherData)
     fmt.Printf("%v\n", weatherData)
+    fmt.Printf(weatherData.Current.Condition.Icon)
 
     place = ""
     url = ""

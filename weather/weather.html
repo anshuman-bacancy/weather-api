@@ -23,7 +23,7 @@
         <div class="card blue-grey darken-1">
           <div class="card-content white-text">
             <span class="card-title">{{.Location.Region}} <span class="dot">.</span> {{.Location.Country}} </span>
-            <span><h3>{{.Current.TempF}} F</h3></span>
+            <span><h3>{{.Current.TempF}} F <img src="{{.Current.Condition.Icon}}" /></h3></span>
             <span class="card-title"><h6><i class="material-icons">place</i>Latitude: {{.Location.Lat}} <span class="dot">.</span> Longitude: {{.Location.Lon}}</h6></span>
             <span class="card-title"><h6><b>{{.Current.Condition.Text}}</b> <span class="dot">.</span> {{.Current.WindKph}} km/h</h6></span>
           </div>
@@ -31,6 +31,5 @@
       </div>
     </div>
   </div>
-
 </body>
 </html>

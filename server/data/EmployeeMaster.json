@@ -16,5 +16,11 @@
 "Email": "jlljflj",
 "Password": "",
 "Position": "new position, asshole"
+},
+{
+"Name": "John Doe",
+"Email": "johndoe@gmail.com",
+"Password": "johndoe",
+"Position": "Fakester"
 }
 ]

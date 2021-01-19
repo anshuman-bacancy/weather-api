@@ -177,6 +177,7 @@ func home(res http.ResponseWriter, req *http.Request) {
 func main() {
   fmt.Println("\033[32mServer is running....")
 
+  http.HandleFunc("/", home)
   http.HandleFunc("/home", home)
   http.HandleFunc("/admin", admin)
   http.HandleFunc("/employee", employee)

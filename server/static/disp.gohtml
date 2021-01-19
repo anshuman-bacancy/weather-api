@@ -1,0 +1,19 @@
+<html>
+<body>
+  <table>
+    <th>
+      <td>Name</td>
+      <td>Email</td>
+      <td>Position</td>
+    </th>
+    <tr>
+    {{.range}}
+      <td>{{.Name}}</td>
+      <td>{{.Email}}</td>
+      <td>{{.Position}}</td>
+    {{end}}
+    </tr>
+  </table>
+</body>
+</html>
+
